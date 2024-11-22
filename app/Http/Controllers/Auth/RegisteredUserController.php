@@ -29,22 +29,32 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'string', 'in:admin,hotel,user'],  // Add string validation
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => $validated['role'],  // Use validated data
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirect based on role
+        switch ($user->role) {
+            case 'admin':
+                return redirect()->route('admin.dashboard');
+            case 'hotel':
+                return redirect()->route('hotel.dashboard');
+            default:
+                return redirect()->route('user.dashboard');
+        }
     }
 }
