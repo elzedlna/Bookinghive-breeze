@@ -7,5 +7,5 @@
     <a href="{{ url('/bookings') }}"
         style="background-color: #1e90ff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View
         Deals</a>
-    <p>Happy travels,<br>{{ config('app.name') }}</p>
+    <p>Happy travels,<br>{{ config('app.name') }}  this is a test</p>
 </div>
