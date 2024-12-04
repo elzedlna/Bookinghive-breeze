@@ -8,6 +8,7 @@ A hotel booking system built with Laravel that allows users to book hotels, hote
 - Composer
 - MySQL
 - Node.js & NPM
+- Git
 
 ## Installation Steps
 

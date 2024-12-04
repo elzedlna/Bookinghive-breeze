@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\Hotel;
 use App\Models\Review;
 use Illuminate\Http\Request;
+use App\Mail\SeasonalEmail;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -93,5 +95,23 @@ class AdminController extends Controller
 
         return redirect()->route('admin.hotels')
             ->with('success', 'Hotel updated successfully');
+    }
+
+    public function sendSeasonalEmail()
+    {
+        try {
+            $users = User::all();
+            
+            foreach ($users as $user) {
+                Mail::to($user->email)
+                    ->later(now()->addSeconds($users->search($user) * 5), new SeasonalEmail($user));
+            }
+            
+            return redirect()->back()
+                ->with('success', 'Seasonal emails queued for ' . $users->count() . ' users');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to queue emails: ' . $e->getMessage());
+        }
     }
 }
