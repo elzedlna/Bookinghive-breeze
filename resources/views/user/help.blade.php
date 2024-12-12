@@ -38,7 +38,7 @@
                         <div class="space-y-4">
                             <!-- Accordion Item 1 -->
                             <div class="bg-white shadow-md rounded-md">
-                                <button class="w-full text-left p-4 font-semibold text-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500" onclick="toggleAccordion('faq-1')">
+                                <button class="w-full text-left p-4 font-semibold text-black focus:outline-none focus:ring-black " onclick="toggleAccordion('faq-1')">
                                     What is your refund policy?
                                 </button>
                                 <div id="faq-1" class="p-4 hidden">
@@ -48,7 +48,7 @@
 
                             <!-- Accordion Item 2 -->
                             <div class="bg-white shadow-md rounded-md">
-                                <button class="w-full text-left p-4 font-semibold text-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500" onclick="toggleAccordion('faq-2')">
+                                <button class="w-full text-left p-4 font-semibold text-black focus:outline-none  focus:ring-black" onclick="toggleAccordion('faq-2')">
                                     How do I change my password?
                                 </button>
                                 <div id="faq-2" class="p-4 hidden">
@@ -58,7 +58,7 @@
 
                             <!-- Accordion Item 3 -->
                             <div class="bg-white shadow-md rounded-md">
-                                <button class="w-full text-left p-4 font-semibold text-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500" onclick="toggleAccordion('faq-3')">
+                                <button class="w-full text-left p-4 font-semibold text-black focus:outline-none focus:ring-black" onclick="toggleAccordion('faq-3')">
                                     How can I contact customer support?
                                 </button>
                                 <div id="faq-3" class="p-4 hidden">
