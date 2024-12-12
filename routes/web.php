@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
     Route::get('/admin/users/{user}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
     Route::put('/admin/users/{user}', [AdminController::class, 'updateUser'])->name('admin.users.update');
+    
 
     // Hotel management
     Route::get('/admin/hotels', [AdminController::class, 'hotels'])->name('admin.hotels');
@@ -71,6 +72,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/payment/{booking}/process', [UserController::class, 'processPayment'])->name('user.payment.process');
         Route::get('/booking/{booking}/invoice', [UserController::class, 'showInvoice'])->name('user.booking.invoice');
     });
+
+    // Recommendation route
+    Route::get('/recommendations/{userId}', [RecommendationController::class, 'showRecommendations'])->name('recommendations');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
