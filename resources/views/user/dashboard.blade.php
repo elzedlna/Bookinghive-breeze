@@ -131,6 +131,15 @@
                     </div>
                 </div>
             </div>
+
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-6">
+                <div class="p-6">
+                     <h2 class="text-2xl font-semibold mb-6">Suggested Hotels</h2>
+                        
+                </div>          
+                </div>
+            </div>
+
         </div>
     </div>
 </x-app-layout>

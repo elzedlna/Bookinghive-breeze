@@ -97,21 +97,23 @@ class AdminController extends Controller
             ->with('success', 'Hotel updated successfully');
     }
 
-    public function sendSeasonalEmail()
+   public function sendSeasonalEmail()
     {
         try {
-            $users = User::all();
-            
-            foreach ($users as $user) {
-                Mail::to($user->email)
-                    ->later(now()->addSeconds($users->search($user) * 5), new SeasonalEmail($user));
-            }
-            
-            return redirect()->back()
-                ->with('success', 'Seasonal emails queued for ' . $users->count() . ' users');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Failed to queue emails: ' . $e->getMessage());
+            // Fetch only users with the role of 'user'
+           $users = User::where('role', 'user')->get();
+        
+         foreach ($users as $user) {
+             // Queue email with a delay to avoid rate-limiting issues
+               Mail::to($user->email)
+                  ->later(now()->addSeconds($users->search($user) * 5), new SeasonalEmail($user));
+         }
+        
+          return redirect()->back()
+             ->with('success', 'Seasonal emails queued for ' . $users->count() . ' users');
+     }   catch (\Exception $e) {
+         return redirect()->back()
+             ->with('error', 'Failed to queue emails: ' . $e->getMessage());
         }
     }
 }

@@ -153,6 +153,10 @@
                             </div>
                         @endforelse
                     </div>
+                     <!-- Pagination -->
+                    <div class="mt-4">
+                        {{ $hotels->links() }}
+                    </div>
                 </div>
             </div>
         </div>
