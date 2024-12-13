@@ -2,58 +2,67 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Hotel;
+use App\Models\Review;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class RecommendationController extends Controller
 {
-    public function showRecommendations($userId)
+    public function getRecommendedHotelsForDashboard($userId, $limit = 3)
     {
-        // Count user bookings
-        $userBookingCount = DB::table('user_bookings')
-            ->where('user_id', $userId)
-            ->count();
+        // Get user's ratings
+        $userRatings = Review::where('user_id', $userId)
+            ->pluck('rating', 'hotel_id');
 
-        // Check if user has at least 5 bookings
-        if ($userBookingCount < 5) {
-            return view('user.recommendations', [
-                'hotels' => [],
-                'message' => 'You need to complete at least 5 bookings to see personalized recommendations.'
-            ]);
+        if ($userRatings->isEmpty()) {
+            // If no ratings, return popular hotels
+            return Hotel::withAvg('reviews', 'rating')
+                ->having('reviews_avg_rating', '>=', 4)
+                ->orderByDesc('reviews_avg_rating')
+                ->take($limit)
+                ->get();
         }
 
-        // Fetch recommended hotels
-        $recommendedHotels = $this->getHotelRecommendations($userId);
+        // Get all users who rated the same hotels
+        $similarUsers = $this->findSimilarUsers($userId);
 
-        // Fetch hotel details
-        $hotels = DB::table('hotels')->whereIn('id', $recommendedHotels)->get();
-
-        return view('user.recommendations', compact('hotels'));
+        // Get recommended hotels
+        return $this->getRecommendedHotels($userId, $similarUsers, $limit);
     }
 
-    private function getHotelRecommendations($userId)
+    private function findSimilarUsers($userId)
     {
-        // Find hotels booked by similar users but not the current user
-        $userBookings = DB::table('user_bookings')
-            ->where('user_id', $userId)
-            ->pluck('hotel_id')
-            ->toArray();
+        return DB::table('reviews as r1')
+            ->join('reviews as r2', 'r1.hotel_id', '=', 'r2.hotel_id')
+            ->where('r1.user_id', $userId)
+            ->where('r2.user_id', '!=', $userId)
+            ->groupBy('r2.user_id')
+            ->select(
+                'r2.user_id',
+                DB::raw('COUNT(*) as common_ratings'),
+                DB::raw('SUM(ABS(r1.rating - r2.rating)) as rating_diff')
+            )
+            ->orderByRaw('rating_diff / common_ratings ASC')
+            ->limit(5)
+            ->pluck('r2.user_id');
+    }
 
-        $similarUsers = DB::table('user_bookings')
-            ->select('user_id')
-            ->whereIn('hotel_id', $userBookings)
-            ->where('user_id', '<>', $userId)
-            ->groupBy('user_id')
-            ->pluck('user_id')
-            ->toArray();
-
-        $recommendedHotels = DB::table('user_bookings')
-            ->whereIn('user_id', $similarUsers)
-            ->whereNotIn('hotel_id', $userBookings)
-            ->groupBy('hotel_id')
-            ->orderByRaw('COUNT(hotel_id) DESC')
-            ->pluck('hotel_id')
-            ->toArray();
-
-        return $recommendedHotels;
+    private function getRecommendedHotels($userId, $similarUsers, $limit)
+    {
+        return Hotel::whereHas('reviews', function ($query) use ($similarUsers) {
+                $query->whereIn('user_id', $similarUsers)
+                    ->where('rating', '>=', 4);
+            })
+            ->whereDoesntHave('reviews', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->whereDoesntHave('bookings', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->withAvg('reviews', 'rating')
+            ->orderByDesc('reviews_avg_rating')
+            ->take($limit)
+            ->get();
     }
 }

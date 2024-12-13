@@ -9,17 +9,23 @@ use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\RecommendationController;
 
 class UserController extends Controller
 {
     public function dashboard()
     {
-        $bookings = Booking::where('user_id', Auth::id())
-            ->with(['hotel'])
-            ->latest()
-            ->get();
+        $user = auth()->user();
+        $bookings = $user->bookings()->with('hotel')->latest()->get();
+        
+        // Get recommended hotels
+        $recommendationController = new RecommendationController();
+        $recommendedHotels = $recommendationController->getRecommendedHotelsForDashboard($user->id);
 
-        return view('user.dashboard', compact('bookings'));
+        return view('user.dashboard', [
+            'bookings' => $bookings,
+            'recommendedHotels' => $recommendedHotels
+        ]);
     }
 
     public function booking(Request $request)
