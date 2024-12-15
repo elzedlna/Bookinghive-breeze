@@ -24,15 +24,23 @@ class AdminController extends Controller
     {
         $query = User::query();
 
+        // Apply search filter
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
+        // Apply role filter
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        // Fetch paginated results
         $users = $query->latest()->paginate(10);
+
         return view('admin.users.index', compact('users'));
     }
 

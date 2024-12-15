@@ -9,9 +9,21 @@
                     <div class="mb-6">
                         <form action="{{ route('admin.users') }}" method="GET">
                             <div class="flex gap-4">
+                                <!-- Search Input -->
                                 <x-text-input id="search" name="search" type="text" 
                                     class="flex-1" placeholder="Search users..."
                                     value="{{ request('search') }}" />
+
+                                <!-- Role Dropdown -->
+                                <select id="role" name="role" 
+                                    class="flex border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                    <option value="">All Roles</option>
+                                    <option value="user" {{ request('role') === 'user' ? 'selected' : '' }}>User</option>
+                                    <option value="hotel" {{ request('role') === 'hotel' ? 'selected' : '' }}>Hotel</option>
+                                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                                </select>
+
+                                <!-- Search Button -->
                                 <x-primary-button>Search</x-primary-button>
                             </div>
                         </form>

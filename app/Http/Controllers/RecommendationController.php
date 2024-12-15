@@ -43,7 +43,7 @@ class RecommendationController extends Controller
                 DB::raw('COUNT(*) as common_ratings'),
                 DB::raw('SUM(ABS(r1.rating - r2.rating)) as rating_diff')
             )
-            ->orderByRaw('rating_diff / common_ratings ASC')
+            ->orderByRaw('SUM(ABS(r1.rating - r2.rating)) / COUNT(*) ASC')
             ->limit(5)
             ->pluck('r2.user_id');
     }

@@ -56,4 +56,9 @@ class Hotel extends Model
     {
         return $this->hasMany(RoomType::class);
     }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class); // Assuming the Booking model is App\Models\Booking
+    }
 }
