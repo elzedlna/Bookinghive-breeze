@@ -3,64 +3,61 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hotel;
-use App\Models\Review;
+use App\Models\Booking;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Collection;
 
 class RecommendationController extends Controller
 {
     public function getRecommendedHotelsForDashboard($userId, $limit = 3)
     {
-        // Get user's ratings
-        $userRatings = Review::where('user_id', $userId)
-            ->pluck('rating', 'hotel_id');
+        // Check if the user has made at least 3 bookings
+        $userBookingsCount = Booking::where('user_id', $userId)->count();
 
-        if ($userRatings->isEmpty()) {
-            // If no ratings, return popular hotels
-            return Hotel::withAvg('reviews', 'rating')
-                ->having('reviews_avg_rating', '>=', 4)
-                ->orderByDesc('reviews_avg_rating')
-                ->take($limit)
-                ->get();
+        if ($userBookingsCount < 3) {
+            // No recommendations for new users or those with fewer than 3 bookings
+            return collect();
         }
 
-        // Get all users who rated the same hotels
-        $similarUsers = $this->findSimilarUsers($userId);
+        // Get hotels booked by the user
+        $userBookedHotels = Booking::where('user_id', $userId)
+            ->pluck('hotel_id')
+            ->toArray();
 
-        // Get recommended hotels
+        // Find similar users based on booking history
+        $similarUsers = $this->findSimilarUsersByBookings($userId, $userBookedHotels);
+
+        // Get hotel recommendations based on similar users
         return $this->getRecommendedHotels($userId, $similarUsers, $limit);
     }
 
-    private function findSimilarUsers($userId)
+    private function findSimilarUsersByBookings($userId, $userBookedHotels)
     {
-        return DB::table('reviews as r1')
-            ->join('reviews as r2', 'r1.hotel_id', '=', 'r2.hotel_id')
-            ->where('r1.user_id', $userId)
-            ->where('r2.user_id', '!=', $userId)
-            ->groupBy('r2.user_id')
+        // Find users who booked the same hotels
+        return DB::table('bookings as b1')
+            ->join('bookings as b2', 'b1.hotel_id', '=', 'b2.hotel_id')
+            ->where('b1.user_id', $userId)
+            ->where('b2.user_id', '!=', $userId)
+            ->whereIn('b1.hotel_id', $userBookedHotels)
+            ->groupBy('b2.user_id')
             ->select(
-                'r2.user_id',
-                DB::raw('COUNT(*) as common_ratings'),
-                DB::raw('SUM(ABS(r1.rating - r2.rating)) as rating_diff')
+                'b2.user_id',
+                DB::raw('COUNT(*) as common_bookings') // Count overlapping bookings
             )
-            ->orderByRaw('SUM(ABS(r1.rating - r2.rating)) / COUNT(*) ASC')
-            ->limit(5)
-            ->pluck('r2.user_id');
+            ->orderByDesc('common_bookings') // Users with more common bookings appear first
+            ->limit(5) // Limit to top 5 similar users
+            ->pluck('b2.user_id');
     }
 
     private function getRecommendedHotels($userId, $similarUsers, $limit)
     {
-        return Hotel::whereHas('reviews', function ($query) use ($similarUsers) {
-                $query->whereIn('user_id', $similarUsers)
-                    ->where('rating', '>=', 4);
-            })
-            ->whereDoesntHave('reviews', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
+        // Suggest hotels booked by similar users but not yet booked by the current user
+        return Hotel::whereHas('bookings', function ($query) use ($similarUsers) {
+                $query->whereIn('user_id', $similarUsers);
             })
             ->whereDoesntHave('bookings', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
-            ->withAvg('reviews', 'rating')
+            ->withAvg('reviews', 'rating') // Include average ratings for additional context
             ->orderByDesc('reviews_avg_rating')
             ->take($limit)
             ->get();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Hotel;
 use App\Models\User;
 use App\Models\Booking;
@@ -9,6 +10,7 @@ use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 use App\Http\Controllers\RecommendationController;
 
 class UserController extends Controller
@@ -286,7 +288,7 @@ class UserController extends Controller
 
         return redirect()
             ->route('user.dashboard')
-            ->with('success', 'Payment successful! Your booking has been confirmed. <a href="' . route('user.booking.invoice', $booking) . '" class="underline">View Invoice</a>');
+            ->with('success', new HtmlString('Payment successful! Your booking has been confirmed. <a href="' . route('user.booking.invoice', $booking) . '" class="underline">View Invoice</a>'));
     }
 
     public function showInvoice(Booking $booking)
