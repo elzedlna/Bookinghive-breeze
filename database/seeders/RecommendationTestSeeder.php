@@ -66,7 +66,7 @@ class RecommendationTestSeeder extends Seeder
                 'number_of_rooms' => rand(1, 3),
                 'price_per_night' => $hotels[$index]->price_per_night,
                 'total_price' => rand(300, 1500),
-                'status' => 'pending', // Use lowercase as per your database
+                'status' => 'confirmed', // Use lowercase as per your database
                 'room_type_id' => 1  // Assuming you have room types set up
             ]);
 
@@ -90,7 +90,7 @@ class RecommendationTestSeeder extends Seeder
                     'number_of_rooms' => rand(1, 3),
                     'price_per_night' => $hotels[$index]->price_per_night,
                     'total_price' => rand(300, 1500),
-                    'status' => 'pending', // Use lowercase as per your database
+                    'status' => 'confirmed', // Use lowercase as per your database
                     'room_type_id' => 1  // Assuming you have room types set up
                 ]);
 
@@ -115,7 +115,7 @@ class RecommendationTestSeeder extends Seeder
                     'number_of_rooms' => rand(1, 3),
                     'price_per_night' => $hotels[$index]->price_per_night,
                     'total_price' => rand(300, 1500),
-                    'status' => 'pending', // Use lowercase as per your database
+                    'status' => 'confirmed', // Use lowercase as per your database
                     'room_type_id' => 1  // Assuming you have room types set up
                 ]);
 
@@ -141,7 +141,7 @@ class RecommendationTestSeeder extends Seeder
                         'number_of_rooms' => rand(1, 3),
                         'price_per_night' => $hotels[$index]->price_per_night,
                         'total_price' => rand(300, 1500),
-                        'status' => 'pending', // Use lowercase as per your database
+                        'status' => 'confirmed', // Use lowercase as per your database
                         'room_type_id' => 1  // Assuming you have room types set up
                     ]);
 
