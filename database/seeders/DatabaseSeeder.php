@@ -34,5 +34,9 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
             'role' => 'admin'
         ]);
+
+        $this->call([
+            RecommendationTestSeeder::class,
+        ]);
     }
 }
