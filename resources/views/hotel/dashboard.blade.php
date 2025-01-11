@@ -1,12 +1,20 @@
 <x-app-layout>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="mb-6 bg-white overflow-hidden shadow-sm rounded-lg p-4">
+                <p class="text-sm text-gray-600">
+                    Last login:
+                    {{ auth()->user()->last_login_at ? auth()->user()->last_login_at->setTimezone('Asia/Kuala_Lumpur')->format('M d, Y H:i') : 'First time login' }}
+                </p>
+            </div>
+
             @if (session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                    role="alert">
                     <span class="block sm:inline">{{ session('success') }}</span>
                 </div>
             @endif
-            
+
             <!-- Header with Create Button -->
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-semibold text-gray-900">My Hotels</h1>
@@ -85,7 +93,7 @@
                                     onsubmit="return confirm('Are you sure you want to delete this hotel? This action cannot be undone.');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" 
+                                    <button type="submit"
                                         class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200">
                                         Delete
                                     </button>

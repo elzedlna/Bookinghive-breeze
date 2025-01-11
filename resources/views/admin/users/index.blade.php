@@ -10,17 +10,19 @@
                         <form action="{{ route('admin.users') }}" method="GET">
                             <div class="flex gap-4">
                                 <!-- Search Input -->
-                                <x-text-input id="search" name="search" type="text" 
-                                    class="flex-1" placeholder="Search users..."
-                                    value="{{ request('search') }}" />
+                                <x-text-input id="search" name="search" type="text" class="flex-1"
+                                    placeholder="Search users..." value="{{ request('search') }}" />
 
                                 <!-- Role Dropdown -->
-                                <select id="role" name="role" 
+                                <select id="role" name="role"
                                     class="flex border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                     <option value="">All Roles</option>
-                                    <option value="user" {{ request('role') === 'user' ? 'selected' : '' }}>User</option>
-                                    <option value="hotel" {{ request('role') === 'hotel' ? 'selected' : '' }}>Hotel</option>
-                                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="user" {{ request('role') === 'user' ? 'selected' : '' }}>User
+                                    </option>
+                                    <option value="hotel" {{ request('role') === 'hotel' ? 'selected' : '' }}>Hotel
+                                    </option>
+                                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin
+                                    </option>
                                 </select>
 
                                 <!-- Search Button -->
@@ -34,22 +36,30 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Name
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Email
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Role
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Last Login
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Actions
                                     </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($users as $user)
+                                @foreach ($users as $user)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             {{ $user->name }}
@@ -61,7 +71,10 @@
                                             {{ ucfirst($user->role) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <a href="{{ route('admin.users.edit', $user) }}" 
+                                            {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never' }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <a href="{{ route('admin.users.edit', $user) }}"
                                                 class="text-blue-600 hover:text-blue-900">Edit</a>
                                         </td>
                                     </tr>
@@ -78,4 +91,4 @@
             </div>
         </div>
     </div>
-</x-app-layout> 
+</x-app-layout>
