@@ -61,4 +61,6 @@ class User extends Authenticatable
         $this->last_login_at = now();
         $this->save();
     }
+
+    
 }

@@ -77,18 +77,54 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         @forelse ($hotels as $hotel)
                             <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                                <!-- Hotel Image -->
-                                <div class="h-48 overflow-hidden relative">
-                                    @if ($hotel->images->isNotEmpty())
-                                        <img src="{{ asset('storage/' . $hotel->images->first()->image_path) }}"
-                                            alt="{{ $hotel->name }}" class="w-full h-full object-cover">
-                                    @else
-                                        <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                                            <span class="text-gray-400">No image available</span>
-                                        </div>
-                                    @endif
+                                <!-- Hotel Images Gallery -->
+                                <div class="bg-white rounded-lg overflow-hidden mb-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+                                        @if ($hotel->images->isNotEmpty())
+                                            <div class="md:col-span-2 h-96">
+                                                @php
+                                                    $firstImage = $hotel->images->first();
+                                                    $imagePath = 'storage/' . $firstImage->image_path;
+                                                    $fullPath = public_path($imagePath);
+                                                @endphp
+                                                
+                                                @if(file_exists($fullPath))
+                                                    <img src="{{ asset($imagePath) }}"
+                                                        alt="{{ $hotel->name }}" 
+                                                        class="w-full h-full object-cover rounded-lg">
+                                                @else
+                                                    <div class="w-full h-full bg-gray-200 flex items-center justify-center rounded-lg">
+                                                        <span class="text-gray-400">Image not found: {{ $imagePath }}</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-4 h-96">
+                                                @foreach ($hotel->images->skip(1)->take(4) as $image)
+                                                    @php
+                                                        $thumbPath = 'storage/' . $image->image_path;
+                                                        $fullThumbPath = public_path($thumbPath);
+                                                    @endphp
+                                                    
+                                                    <div class="h-44">
+                                                        @if(file_exists($fullThumbPath))
+                                                            <img src="{{ asset($thumbPath) }}" 
+                                                                alt="{{ $hotel->name }}"
+                                                                class="w-full h-full object-cover rounded-lg">
+                                                        @else
+                                                            <div class="w-full h-full bg-gray-200 flex items-center justify-center rounded-lg">
+                                                                <span class="text-gray-400">Image not found: {{ $thumbPath }}</span>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="col-span-full h-96 bg-gray-200 flex items-center justify-center rounded-lg">
+                                                <span class="text-gray-400">No images available</span>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
-
                                 <!-- Hotel Info -->
                                 <div class="p-4">
                                     <!-- Location -->

@@ -85,6 +85,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/send-seasonal-email', [AdminController::class, 'sendSeasonalEmail'])
         ->middleware('role:admin')
         ->name('admin.send-seasonal-email');
+
+
+    
 });
 
 require __DIR__ . '/auth.php';

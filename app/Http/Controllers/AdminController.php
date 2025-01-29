@@ -124,4 +124,30 @@ class AdminController extends Controller
              ->with('error', 'Failed to queue emails: ' . $e->getMessage());
         }
     }
+
+    public function showUserDetails(User $user)
+    {
+    // Assuming you have a relationship 'bookings' on the User model that fetches their bookings
+    $bookings = $user->bookings()->with('hotel')->get();
+
+    return view('admin.users.userdetails', compact('user', 'bookings'));
+    }
+
+    public function showHotelDetails(Request $request)
+    {
+    // Fetch all hotels with optional filtering if necessary
+    $query = Hotel::query();
+
+    // Apply search filter for hotels
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where('name', 'like', "%{$search}%")
+              ->orWhere('address', 'like', "%{$search}%");
+    }
+
+    // Fetch paginated results
+    $hotels = $query->with(['user', 'bookings'])->paginate(10);
+
+    return view('admin.hotels.details', compact('hotels'));
+    }
 }

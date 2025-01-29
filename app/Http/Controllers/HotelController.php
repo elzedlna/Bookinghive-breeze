@@ -58,12 +58,22 @@ class HotelController extends Controller
         // Handle image uploads
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $path = $image->store('hotel-images', 'public');
-                $hotel->images()->create([
-                    'image_path' => $path
-                ]);
-            }
-        }
+            // Log the original filename and path for debugging
+            \Log::info('Storing image:', [
+                'original_name' => $image->getClientOriginalName(),
+                'mime_type' => $image->getMimeType()
+            ]);
+        
+            $path = $image->store('hotel-images', 'public');
+        
+            // Log the stored path
+            \Log::info('Image stored at:', ['path' => $path]);
+            
+            $hotel->images()->create([
+                'image_path' => $path
+            ]);
+    }
+}
 
         return redirect()
             ->route('hotel.dashboard')

@@ -19,9 +19,13 @@ class SendLoginReminders extends Command
 
     public function handle()
     {
-        // Find users who haven't logged in for 1 minute (for testing)
-        $inactiveUsers = User::where('last_login_at', '<', now()->subMinute())
-            ->orWhereNull('last_login_at')
+        // Find users who booked a hotel, are inactive, and have the role "user"
+        $inactiveUsers = User::where('role', 'user') // Ensure only users
+            ->whereHas('bookings') // Ensure they have bookings
+            ->where(function ($query) {
+                $query->where('last_login_at', '<', now()->subMinute()) // Check inactivity
+                      ->orWhereNull('last_login_at'); // Or never logged in
+            })
             ->get();
 
         foreach ($inactiveUsers as $user) {
@@ -31,4 +35,4 @@ class SendLoginReminders extends Command
 
         $this->info("Completed sending reminder emails to {$inactiveUsers->count()} users.");
     }
-} 
+}

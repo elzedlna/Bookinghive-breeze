@@ -35,6 +35,12 @@
                             </select>
                             <x-input-error class="mt-2" :messages="$errors->get('role')" />
                         </div>
+                        
+                        <!-- View Details Button -->
+                        <a href="{{ route('admin.users.details', $user->id) }}" 
+                        class="block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-center">
+                        View Details
+                        </a>
 
                         <div class="flex justify-end gap-4">
                             <x-secondary-button onclick="window.history.back()" type="button">
